@@ -4,6 +4,9 @@ import GoogleProvider from "next-auth/providers/google";
 import Volunteer from "@/models/volunteer";
 import Hospital from "@/models/hospital";
 import { compare } from "bcryptjs";
+import connectDB from "./dbconfig/dbconfig";
+
+connectDB();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
