@@ -6,15 +6,15 @@ import { useRouter } from "next/navigation";
 export default function VolunteerSignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("volunteer");
+  const [role, setRole] = useState("volunteer"); 
   const [showRoleOptions, setShowRoleOptions] = useState(false);
   const router = useRouter();
 
-  const handleToggle = async () => {
+  const handleToggle = () => {
     setShowRoleOptions(!showRoleOptions);
   };
 
-  const handleRole = async (rolename) => {
+  const handleRole = (rolename) => {
     setRole(rolename);
     setShowRoleOptions(false);
   };
@@ -26,11 +26,12 @@ export default function VolunteerSignIn() {
         redirect: false,
         email,
         password,
+        role, 
       });
 
       if (result && !result.error) {
-        console.log("login successful");
-        router.push("/volunteer/dashboard");
+        const redirectUrl = role === "volunteer" ? "/volunteer/dashboard" : "/hospital/dashboard";
+        router.push(redirectUrl);
       } else {
         console.error(result.error);
       }

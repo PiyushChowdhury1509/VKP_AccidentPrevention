@@ -10,63 +10,50 @@ export default function VolunteerSignUp() {
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
   const [useAutoLocation, setUseAutoLocation] = useState(false);
+  const [role, setRole] = useState("volunteer");
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let resolvedLocation = location;
+
     if (useAutoLocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        const autoLocation = `Lat: ${latitude}, Long: ${longitude}`;
-
-        try {
-          const res = await axios.post("/api/signup", {
-            email,
-            password,
-            username,
-            location: autoLocation,
-          });
-
-          if (res.status === 201) {
-            const result = await signIn("credentials", {
-              redirect: false,
-              email,
-              password,
-            });
-
-            if (!result.error) {
-              router.push("/volunteer/dashboard");
-            }
-          }
-        } catch (err) {
-          console.error(err);
-        }
+      await new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          resolvedLocation = `Lat: ${latitude}, Long: ${longitude}`;
+          resolve();
+        });
       });
-    } else {
-      try {
-        const res = await axios.post("/api/signup", {
+    }
+
+    try {
+      const res = await axios.post("/api/signup/volunteer", {
+        email,
+        password,
+        username,
+        location: resolvedLocation,
+        role,
+      });
+
+      if (res.status === 201) {
+        const result = await signIn("credentials", {
+          redirect: false,
           email,
           password,
-          username,
-          location,
+          role,
         });
 
-        if (res.status === 200) {
-          const result = await signIn("credentials", {
-            redirect: false,
-            email,
-            password,
-          });
-
-          if (!result.error) {
-            router.push("/volunteer/dashboard");
-          }
+        if (!result.error) {
+          const redirectUrl = role === "volunteer" ? "/volunteer/dashboard" : "/hospital/dashboard";
+          router.push(redirectUrl);
         }
-      } catch (err) {
-        console.error(err);
       }
+    } catch (err) {
+      console.error(err);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -125,6 +112,17 @@ export default function VolunteerSignUp() {
                 className="w-full p-2 border border-gray-300 rounded"
               />
             )}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">Role</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+            >
+              <option value="volunteer">Volunteer</option>
+              <option value="hospital">Hospital</option>
+            </select>
           </div>
           <button type="submit" className="w-full bg-blue-500 text-white py-2 px-4 rounded font-bold">
             Sign Up
