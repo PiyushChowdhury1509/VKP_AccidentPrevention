@@ -59,7 +59,7 @@ const Navbar = () => {
     navItems.push(
       {
         name: "Signup",
-        link: "/auth/signup",
+        link: "/askrolesignup",
         icon: <IconUserPlus className="h-6 w-6 text-neutral-500 dark:text-white" />,
       },
       {
