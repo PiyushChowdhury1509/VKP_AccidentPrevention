@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { IconHome, IconMessage, IconUser, IconDashboard, IconLogin, IconLogout, IconUserPlus } from "@tabler/icons-react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import Blogs from "@/app/blogs/page";
 
 const Navbar = () => {
   const { data: session } = useSession();

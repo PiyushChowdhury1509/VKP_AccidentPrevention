@@ -49,6 +49,8 @@ const UploadForm = () => {
     <div className="bg-gray-900 text-gray-200 min-h-screen p-8 space-y-8">
 
       {/* Top Section */}
+      <br/>
+      <br/>
       <div className="text-center">
         <h1 className="text-4xl font-bold text-yellow-400">Accident Reporting</h1>
         <p className="text-gray-400 mt-2">
@@ -103,7 +105,7 @@ const UploadForm = () => {
         
         {/* Preview Section */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-md flex-1">
-          <h2 className="text-2xl font-bold mb-4 text-yellow-400">Previews</h2>
+          <h2 className="text-2xl font-bold mb-4 text-yellow-400">Uploaded Photos</h2>
           <div className="flex flex-wrap gap-4">
             {previewUrls.map((url, index) => (
               <img
