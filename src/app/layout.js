@@ -15,6 +15,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <SessionProvider>
+          <Navbar/>
           {children}
         </SessionProvider>
       </body>
