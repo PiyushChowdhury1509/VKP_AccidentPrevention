@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { IconHome, IconMessage, IconUser, IconDashboard, IconLogin, IconLogout, IconUserPlus } from "@tabler/icons-react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import Blogs from "@/app/blogs/page";
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -30,15 +31,25 @@ const Navbar = () => {
       icon: <IconHome className="h-6 w-6 text-neutral-500 dark:text-white" />,
     },
     {
-      name: "About",
-      link: "/about",
+      name: "Privacy Policy",
+      link: "/privacypolicy",
       icon: <IconUser className="h-6 w-6 text-neutral-500 dark:text-white" />,
+    },
+    {
+      name: "About Us",
+      link: "/aboutus",
+      icon: <IconUserPlus className="h-6 w-6 text-neutral-500 dark:text-white" />,
     },
     {
       name: "Contact",
       link: "/contact",
       icon: <IconMessage className="h-6 w-6 text-neutral-500 dark:text-white" />,
     },
+    {
+      name: "Blogs",
+      link: "/blogs",
+      icon: <IconMessage className="h-6 w-6 text-neutral-500 dark:text-white" />,
+    }
   ];
 
   if (session) {
