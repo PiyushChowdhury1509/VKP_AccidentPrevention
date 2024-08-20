@@ -1,15 +1,20 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const UploadForm = () => {
   const [files, setFiles] = useState([]);
+  const [videoFiles, setVideoFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [videoPreviewUrls, setVideoPreviewUrls] = useState([]);
   const [description, setDescription] = useState("");
   const [activeFAQ, setActiveFAQ] = useState(null);
   const [verificationMethod, setVerificationMethod] = useState(null); 
   const [phoneNumber, setPhoneNumber] = useState(""); 
   const [otp, setOtp] = useState(["", "", "", ""]); 
   const [email, setEmail] = useState(""); 
+
+  const imageInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -19,10 +24,21 @@ const UploadForm = () => {
     setPreviewUrls((prevUrls) => [...prevUrls, ...urls]);
   };
 
-  const handleAddFiles = (e) => {
+  const handleVideoFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    setVideoFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+
+    const urls = selectedFiles.map(file => URL.createObjectURL(file));
+    setVideoPreviewUrls((prevUrls) => [...prevUrls, ...urls]);
+  };
+
+  const handleAddFiles = (e, type) => {
     e.preventDefault();
-    const fileInput = document.getElementById('fileInput');
-    fileInput.click();
+    if (type === 'image') {
+      imageInputRef.current.click();
+    } else if (type === 'video') {
+      videoInputRef.current.click();
+    }
   };
 
   const handleDescriptionChange = (e) => {
@@ -53,6 +69,9 @@ const UploadForm = () => {
     for (const file of files) {
       formData.append('file', file);
     }
+    for (const videoFile of videoFiles) {
+      formData.append('videoFile', videoFile);
+    }
     formData.append('description', description);
 
     if (verificationMethod === "phone") {
@@ -75,11 +94,12 @@ const UploadForm = () => {
   };
 
   return (
+    <>
+    <br/>
+    <br/>
     <div className="bg-[#0D1117] text-[#C9D1D9] min-h-screen p-8 space-y-8">
 
       {/* Top Section */}
-      <br/>
-      <br/>
       <div className="text-center">
         <h1 className="text-4xl font-bold text-[#58A6FF]">Accident Reporting</h1>
         <p className="text-[#C9D1D9] mt-2">
@@ -88,96 +108,100 @@ const UploadForm = () => {
       </div>
 
       {/* Upload and Preview Section */}
-      <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
+<div className="flex flex-col space-y-8 md:flex-row md:space-y-0 md:space-x-8">
 
-        {/* Upload Section */}
-      <div className="bg-[#161B22] p-6 rounded-lg shadow-md flex-1">
-        <h2 className="text-2xl font-semibold mb-4 text-[#58A6FF]">Upload Images</h2>
-        <p className="text-[#C9D1D9] mb-4">Please upload relevant images that describe the accident.</p>
+  {/* Upload Section */}
+  <div className="bg-[#161B22] p-6 rounded-lg shadow-md flex-1">
+    <h2 className="text-2xl font-semibold mb-4 text-[#58A6FF]">Upload Images</h2>
+    <p className="text-[#C9D1D9] mb-4">Please upload relevant images that describe the accident.</p>
 
-        <button
-            onClick={handleAddFiles}
-            className="w-full bg-[#58A6FF] hover:bg-[#1f6feb] text-[#0D1117] font-bold py-2 px-4 rounded transition duration-300 mb-4"
-          >
-            Add Images
-        </button>
+    <button
+      onClick={(e) => handleAddFiles(e, 'image')}
+      className="w-full bg-[#58A6FF] hover:bg-[#1f6feb] text-[#0D1117] font-bold py-2 px-4 rounded transition duration-300 mb-4"
+    >
+      Add Images
+    </button>
 
-        <input
-          id="fileInput"
-          type="file"
-          accept="image/*"
-          multiple
-          capture="environment" 
-          onChange={handleFileChange}
-          className="hidden"
+    <input
+      id="imageFileInput"
+      type="file"
+      accept="image/*"
+      multiple
+      capture="environment" 
+      onChange={handleFileChange}
+      ref={imageInputRef}
+      className="hidden"
+    />
+
+    <h2 className="text-2xl font-semibold mt-8 mb-4 text-[#58A6FF]">Upload Videos</h2>
+    <p className="text-[#C9D1D9] mb-4">Please upload relevant videos that describe the accident.</p>
+
+    <button
+      onClick={(e) => handleAddFiles(e, 'video')}
+      className="w-full bg-[#58A6FF] hover:bg-[#1f6feb] text-[#0D1117] font-bold py-2 px-4 rounded transition duration-300 mb-4"
+    >
+      Add Videos
+    </button>
+
+    <input
+      id="videoFileInput"
+      type="file"
+      accept="video/*"
+      multiple
+      capture="environment" 
+      onChange={handleVideoFileChange}
+      ref={videoInputRef}
+      className="hidden"
+    />
+
+    <div className="mb-4 mt-8">
+      <label className="block text-[#C9D1D9] text-lg font-semibold mb-2">
+        Description
+      </label>
+      <textarea
+        value={description}
+        onChange={handleDescriptionChange}
+        className="w-full p-3 border rounded bg-[#0D1117] text-[#C9D1D9] h-32 resize-none"
+        placeholder="Describe the content..."
+      ></textarea>
+    </div>
+  </div>
+
+  {/* Preview Section */}
+  <div className="bg-[#161B22] p-6 rounded-lg shadow-md flex-1">
+    <h2 className="text-2xl font-bold mb-4 text-[#58A6FF]">Uploaded Photos</h2>
+    <div className="flex flex-wrap gap-4">
+      {previewUrls.map((url, index) => (
+        <img
+          key={index}
+          src={url}
+          alt={`Preview ${index}`}
+          className="w-32 h-32 object-cover rounded-lg border border-[#0D1117]"
         />
+      ))}
+    </div>
+  </div>
+</div>
 
-        <h2 className="text-2xl font-semibold mb-4 text-[#58A6FF]">Upload Videos</h2>
-        <p className="text-[#C9D1D9] mb-4">Please upload relevant videos that describe the accident.</p>
+{/* Uploaded Videos Section */}
+<div className="flex flex-col space-y-8 md:flex-row md:space-y-0 md:space-x-8">
 
-        <button
-            onClick={handleAddFiles}
-            className="w-full bg-[#58A6FF] hover:bg-[#1f6feb] text-[#0D1117] font-bold py-2 px-4 rounded transition duration-300 mb-4"
-          >
-            Add Videos
-        </button>
-
-        <input
-          id="fileInput"
-          type="file"
-          accept="video/*"
-          multiple
-          capture="environment" 
-          onChange={handleFileChange}
-          className="hidden"
+  <div className="bg-[#161B22] p-6 rounded-lg shadow-md flex-1">
+    <h2 className="text-2xl font-bold mb-4 text-[#58A6FF]">Uploaded Videos</h2>
+    <div className="flex flex-wrap gap-4">
+      {videoPreviewUrls.map((url, index) => (
+        <video
+          key={index}
+          src={url}
+          controls
+          className="w-32 h-32 object-cover rounded-lg border border-[#0D1117]"
         />
+      ))}
+    </div>
+  </div>
 
+</div>
 
-        <div className="mb-4">
-          <label className="block text-[#C9D1D9] text-lg font-semibold mb-2">
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={handleDescriptionChange}
-            className="w-full p-3 border rounded bg-[#0D1117] text-[#C9D1D9] h-32 resize-none"
-            placeholder="Describe the content..."
-          ></textarea>
-        </div>
-        <p className="text-[#C9D1D9] mb-4">Please add email or mobile number in the section below, your information will be kept secret. It will just take some seconds.</p>
-      </div>
-      
-       
-        {/* Preview Section */}
-        <div className="bg-[#161B22] p-6 rounded-lg shadow-md flex-1">
-          <h2 className="text-2xl font-bold mb-4 text-[#58A6FF]">Uploaded Photos</h2>
-          <div className="flex flex-wrap gap-4">
-            {previewUrls.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                alt={`Preview ${index}`}
-                className="w-32 h-32 object-cover rounded-lg border border-[#0D1117]"
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-[#161B22] p-6 rounded-lg shadow-md flex-1">
-          <h2 className="text-2xl font-bold mb-4 text-[#58A6FF]">Uploaded Videos</h2>
-          <div className="flex flex-wrap gap-4">
-            {previewUrls.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                alt={`Preview ${index}`}
-                className="w-32 h-32 object-cover rounded-lg border border-[#0D1117]"
-              />
-            ))}
-          </div>
-        </div>
-
-      </div>
 
       {/* Verification Section */}
       <div className="bg-[#161B22] p-6 rounded-lg shadow-md">
@@ -364,6 +388,7 @@ const UploadForm = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 
