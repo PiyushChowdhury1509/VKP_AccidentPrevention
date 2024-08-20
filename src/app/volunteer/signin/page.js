@@ -39,7 +39,7 @@ export default function VolunteerSignIn() {
       });
 
       if (result && !result.error) {
-        toast.dismiss(); // Dismiss the loading toast
+        toast.dismiss(); 
         const redirectUrl = role === "volunteer" ? "/volunteer/dashboard" : "/hospital/dashboard";
         router.push(redirectUrl);
         toast.success("Signed in successfully");
