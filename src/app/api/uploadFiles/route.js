@@ -9,26 +9,33 @@ cloudinary.config({
 
 async function parseFormData(req) {
   const formData = await req.formData();
-  const files = formData.getAll('file'); 
+  const files = formData.getAll('file');
   return files;
 }
 
 export const POST = async (req) => {
   try {
     const files = await parseFormData(req);
+    console.log('Received files:', files);
+    console.log('Number of files received:', files.length);
 
     const uploadFile = async (file) => {
-      const arrayBuffer = await file.arrayBuffer(); 
+      const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
+
+      console.log('Uploading file type:', file.type);
+
+      const fileType = file.type.startsWith('videoFile/') ? 'video' : 'image';
 
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.v2.uploader.upload_stream(
-          { resource_type: 'image', folder: 'accidents' },
+          { resource_type: fileType, folder: 'accidents' },
           (error, result) => {
             if (error) {
               reject(error);
             } else {
-              resolve(result.secure_url); 
+              console.log(`Uploaded ${fileType} URL:`, result.secure_url);
+              resolve(result.secure_url);
             }
           }
         );
@@ -39,7 +46,9 @@ export const POST = async (req) => {
 
     const uploadPromises = files.map(uploadFile);
     const urls = await Promise.all(uploadPromises);
-    console.log(urls);
+
+    console.log('All uploaded URLs:', urls);
+
     return NextResponse.json({ urls });
   } catch (error) {
     console.error('Upload error:', error);

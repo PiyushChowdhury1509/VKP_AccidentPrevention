@@ -66,28 +66,32 @@ const UploadForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    
     for (const file of files) {
-      formData.append('file', file);
+        formData.append('file', file);
     }
+    
     for (const videoFile of videoFiles) {
-      formData.append('videoFile', videoFile);
+        formData.append('file', videoFile); 
     }
+    
     formData.append('description', description);
 
     if (verificationMethod === "phone") {
-      formData.append('phoneNumber', phoneNumber);
-      formData.append('otp', otp.join(''));
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('otp', otp.join(''));
     } else if (verificationMethod === "email") {
-      formData.append('email', email);
+        formData.append('email', email);
     }
 
     const response = await fetch('/api/uploadFiles', {
-      method: 'POST',
-      body: formData,
+        method: 'POST',
+        body: formData,
     });
     const data = await response.json();
-    console.log(data); 
-  };
+    console.log(data);
+};
+
 
   const toggleFAQ = (index) => {
     setActiveFAQ(activeFAQ === index ? null : index);
