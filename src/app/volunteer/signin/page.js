@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function VolunteerSignIn() {
   const [email, setEmail] = useState("");
@@ -21,6 +23,13 @@ export default function VolunteerSignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    toast.loading("Signing in...");
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -30,40 +39,44 @@ export default function VolunteerSignIn() {
       });
 
       if (result && !result.error) {
+        toast.dismiss(); // Dismiss the loading toast
         const redirectUrl = role === "volunteer" ? "/volunteer/dashboard" : "/hospital/dashboard";
         router.push(redirectUrl);
+        toast.success("Signed in successfully");
       } else {
-        console.error(result.error);
+        toast.dismiss();
+        toast.error(result.error || "Sign-in failed");
       }
     } catch (err) {
-      console.error("Sign-in failed:", err);
+      toast.dismiss();
+      toast.error("Sign-in failed: " + err.message);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div className="bg-white/30 backdrop-blur-md p-8 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-800">🔒 Sign In</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+            <label className="block text-gray-800 text-sm font-bold mb-2">Email</label>
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+            <label className="block text-gray-800 text-sm font-bold mb-2">Password</label>
             <input
               type="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -100,6 +113,7 @@ export default function VolunteerSignIn() {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 }
