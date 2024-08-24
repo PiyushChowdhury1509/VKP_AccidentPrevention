@@ -123,7 +123,7 @@ export default function HospitalSignUp() {
               placeholder="Hospital Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded bg-white text-gray-800"
+              className="w-30 h-10  p-3 border border-gray-300 rounded bg-white text-gray-800"
               required
             />
           </div>
@@ -135,7 +135,7 @@ export default function HospitalSignUp() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded bg-white text-gray-800"
+              className="w-30 p-3 border border-gray-300 rounded bg-white text-gray-800"
               required
             />
           </div>
