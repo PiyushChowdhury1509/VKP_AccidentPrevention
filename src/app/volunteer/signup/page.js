@@ -1,6 +1,6 @@
+// pages/signup/volunteer.js
 "use client";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
@@ -12,7 +12,7 @@ export default function VolunteerSignUp() {
   const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
   const [useAutoLocation, setUseAutoLocation] = useState(false);
-  const [role, setRole] = useState("volunteer");
+  const [role] = useState("volunteer");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -50,20 +50,9 @@ export default function VolunteerSignUp() {
       });
 
       if (res.status === 201) {
-        const result = await signIn("credentials", {
-          redirect: false,
-          email,
-          password,
-          role,
-        });
-
-        if (!result.error) {
-          const redirectUrl = role === "volunteer" ? "/volunteer/dashboard" : "/hospital/dashboard";
-          router.push(redirectUrl);
-          toast.success("Sign up successful!");
-        } else {
-          toast.error("Sign up failed. Please try again.");
-        }
+        toast.success("Sign up successful! Please check your email to verify your account.");
+      } else {
+        toast.error(res.data.message || "Sign up failed. Please try again.");
       }
     } catch (err) {
       toast.error("Sign up failed. Please try again.");

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-
-const volunteerSchema=new mongoose.Schema({
+const volunteerSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -11,10 +10,18 @@ const volunteerSchema=new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+    },
+    verifyToken: {
+        type: String,
+        required: true,
+    },
+    verified: {
+        type: Boolean,
+        default: false,
     }
-},{timestamps: true})
+}, { timestamps: true });
 
-const Volunteer=mongoose.models.volunteer || mongoose.model("volunteer",volunteerSchema);
+const Volunteer = mongoose.models.volunteer || mongoose.model("volunteer", volunteerSchema);
 
 export default Volunteer;

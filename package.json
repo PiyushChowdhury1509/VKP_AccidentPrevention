@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-email/components": "^0.0.23",
     "@tabler/icons-react": "^3.11.0",
     "axios": "^1.7.3",
     "bcryptjs": "^2.4.3",
